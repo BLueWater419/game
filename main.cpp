@@ -4,6 +4,7 @@
 #include <vector>
 #include <deque>
 // #include <SFML/Graphics.hpp>
+// #include "C:\\Users\\g0ldc\\OneDrive\\Dokumente\\Libraries\\SFML-3.0.0\\include\\SFML\\Graphics.hpp"
 
 std::vector<std::pair<int, int>> get_important_indices(std::vector<std::string> map, int line_length) {
     std::vector<std::pair<int, int>> indices;
@@ -139,7 +140,7 @@ bool is_map_valid(std::vector<std::string> map) {
 }
 
 int main() {
-    std::string file_directory = "C:/Users/g0ldc/OneDrive/Dokumente/Projects/CPP/game/maps/map1.txt";
+    std::string file_directory = "C:\\Users\\g0ldc\\OneDrive\\Dokumente\\Projects\\CPP\\game\\maps\\map1.txt";
 
     std::ifstream file(file_directory);
     std::string my_text;
