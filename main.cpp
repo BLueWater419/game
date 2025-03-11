@@ -44,53 +44,44 @@ bool is_pair_in_vector(std::pair<int, int> pair, std::vector<std::pair<int, int>
     return false;
 }
 
-bool is_map_valid(std::vector<std::string> map) {
-    if (map.empty()) {
-        std::cout << "map doesn't have any content\n";
-        return false;
-    }
-
+std::pair<int, int> is_map_right_shape(std::vector<std::string> map) {
     int w = -1;
     int h = map.size();
-
-    std::cout << "checking if map is valid..\n";
-    std::cout << "checking for map shape.." << "\n";
 
     for (int i = 0; i < h; i++) {
         std::string line = map[i];
         int line_length = line.length();
 
         if (w != -1 && line_length != w) {
-            return false;
+            return std::make_pair(-1, -1);
         }
 
         if (i == 0 || i == h - 1) {
-            std::string needed_string = "";
-
-            for (int i = 0; i < line_length; i++) {
-                needed_string.append("1");
-            }
-
-            if (line != needed_string) {
-                return false;
+            for (int v = 0; i < line_length; i++) {
+                if (line[v] != '1') {
+                    return std::make_pair(-1, -1);
+                }
             }
         }
 
         if (line[0] != '1' || line[line_length - 1] != '1') {
-            return false;
+            return std::make_pair(-1, -1);
         }
 
         w = line_length;
     }
 
-    std::cout << "checking for valid paths.." << "\n";
+    return std::make_pair(h, w);
+}
 
+bool map_has_correct_paths(std::vector<std::string> map, std::pair<int, int> hw_pair) {
     std::vector<std::pair<int, int>> directions = {
         std::make_pair(0, 1), std::make_pair(1, 0),
         std::make_pair(0, -1), std::make_pair(-1, 0)
     };
-    std::vector<std::pair<int, int>> important_indices = get_important_indices(map, w);
-    std::pair<int, int> starting_pos = get_starting_position(map, w);
+
+    std::vector<std::pair<int, int>> important_indices = get_important_indices(map, hw_pair.second);
+    std::pair<int, int> starting_pos = get_starting_position(map, hw_pair.second);
 
     for (std::pair<int, int> indices : important_indices) {
         std::deque<std::pair<int, int>> queue;
@@ -106,8 +97,8 @@ bool is_map_valid(std::vector<std::string> map) {
             queue.pop_front();
 
             for (std::pair<int, int> pair : directions) {
-                int next_x = (v.second + pair.second) % w;
-                int next_y = (v.first + pair.first) % h;
+                int next_x = (v.second + pair.second) % hw_pair.second;
+                int next_y = (v.first + pair.first) % hw_pair.first;
                 std::pair<int, int> next_pair = std::make_pair(next_y, next_x);
 
                 if (is_pair_in_vector(next_pair, explored)) {
@@ -137,6 +128,25 @@ bool is_map_valid(std::vector<std::string> map) {
     }
 
     return true;
+}
+
+bool is_map_valid(std::vector<std::string> map) {
+    if (map.empty()) {
+        std::cout << "map doesn't have any content\n";
+        return false;
+    }
+
+    std::cout << "checking if map is valid..\n";
+    std::cout << "checking for map shape.." << "\n";
+
+    std::pair<int, int> hw_pair = is_map_right_shape(map);
+
+    if (hw_pair.first == -1) {
+        return false;
+    }
+
+    std::cout << "checking for valid paths.." << "\n";
+    return map_has_correct_paths(map, hw_pair);
 }
 
 int main() {

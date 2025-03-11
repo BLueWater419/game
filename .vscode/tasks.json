@@ -29,7 +29,7 @@
             "type": "shell",
             "command": "g++",
             "args": [
-                "C:\\Users\\g0ldc\\OneDrive\\Dokumente\\Projects\\CPP\\game\\game\\src\\main.cpp",
+                "C:\\Users\\g0ldc\\OneDrive\\Dokumente\\Projects\\CPP\\game\\main.cpp",
                 "-o",
                 "main.exe",
                 "-I",
