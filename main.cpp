@@ -74,57 +74,43 @@ std::pair<int, int> is_map_right_shape(std::vector<std::string> map) {
     return std::make_pair(h, w);
 }
 
-bool map_has_correct_paths(std::vector<std::string> map, std::pair<int, int> hw_pair) {
+bool recurse(std::vector<std::string> map, std::pair<int, int> current, std::pair<int, int> target, std::vector<std::pair<int, int>> visited, std::pair<int, int> hw_pair) {
     std::vector<std::pair<int, int>> directions = {
         std::make_pair(0, 1), std::make_pair(1, 0),
         std::make_pair(0, -1), std::make_pair(-1, 0)
     };
 
+    if (current == target) return true;
+
+    visited.push_back(current);
+
+    for (std::pair<int, int> dir : directions) {
+        int next_x = (current.second + dir.second) % hw_pair.second;
+        int next_y = (current.first + dir.first) % hw_pair.first;
+        std::pair<int, int> next_pos = {next_y, next_x};
+
+        if (is_pair_in_vector(next_pos, visited) || (map[next_y][next_x] == '1')) {
+            continue;
+        }
+
+        if (recurse(map, next_pos, target, visited, hw_pair)) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+bool map_has_correct_paths(std::vector<std::string> map, std::pair<int, int> hw_pair) {
     std::vector<std::pair<int, int>> important_indices = get_important_indices(map, hw_pair.second);
     std::pair<int, int> starting_pos = get_starting_position(map, hw_pair.second);
 
-    for (std::pair<int, int> indices : important_indices) {
-        std::deque<std::pair<int, int>> queue;
-        std::vector<std::pair<int, int>> explored;
+    for (std::pair<int, int> target : important_indices) {
+        std::vector<std::pair<int, int>> visited;
 
-        bool found = false;
-
-        queue.push_back(starting_pos);
-        explored.push_back(starting_pos);
-
-        while (!queue.empty()) {
-            std::pair<int, int> v = queue.front();
-            queue.pop_front();
-
-            for (std::pair<int, int> pair : directions) {
-                int next_x = (v.second + pair.second) % hw_pair.second;
-                int next_y = (v.first + pair.first) % hw_pair.first;
-                std::pair<int, int> next_pair = std::make_pair(next_y, next_x);
-
-                if (is_pair_in_vector(next_pair, explored)) {
-                    continue;
-                }
-                
-                char next_cell = map.at(next_y)[next_x];
-                if (next_cell == '0' || next_cell == 'C' || next_cell == 'E') {
-                    if (next_x == indices.second && next_y == indices.first) {
-                        found = true;
-                        break;
-                    } else {
-                        explored.push_back(next_pair);
-                        queue.push_back(next_pair);
-                    }
-                }
-            }
-
-            if (found) {
-                break;
-            }
-        }
-
-        if (!found) {
+        if (!recurse(map, starting_pos, target, visited, hw_pair)) {
             return false;
-        }
+        }   
     }
 
     return true;
@@ -197,3 +183,62 @@ int main() {
 
     return 0;
 }
+
+/*
+bool map_has_correct_paths_loop(std::vector<std::string> map, std::pair<int, int> hw_pair) {
+    std::vector<std::pair<int, int>> directions = {
+        std::make_pair(0, 1), std::make_pair(1, 0),
+        std::make_pair(0, -1), std::make_pair(-1, 0)
+    };
+
+    std::vector<std::pair<int, int>> important_indices = get_important_indices(map, hw_pair.second);
+    std::pair<int, int> starting_pos = get_starting_position(map, hw_pair.second);
+
+    for (std::pair<int, int> indices : important_indices) {
+        std::deque<std::pair<int, int>> queue;
+        std::vector<std::pair<int, int>> explored;
+
+        bool found = false;
+
+        queue.push_back(starting_pos);
+        explored.push_back(starting_pos);
+
+        while (!queue.empty()) {
+            std::pair<int, int> v = queue.front();
+            queue.pop_front();
+
+            for (std::pair<int, int> pair : directions) {
+                int next_x = (v.second + pair.second) % hw_pair.second;
+                int next_y = (v.first + pair.first) % hw_pair.first;
+                std::pair<int, int> next_pair = std::make_pair(next_y, next_x);
+
+                if (is_pair_in_vector(next_pair, explored)) {
+                    continue;
+                }
+                
+                char next_cell = map.at(next_y)[next_x];
+                if (next_cell == '0' || next_cell == 'C' || next_cell == 'E') {
+                    if (next_x == indices.second && next_y == indices.first) {
+                        found = true;
+                        break;
+                    } else {
+                        explored.push_back(next_pair);
+                        queue.push_back(next_pair);
+                    }
+                }
+            }
+
+            if (found) {
+                break;
+            }
+        }
+
+        if (!found) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+*/
