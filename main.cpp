@@ -3,8 +3,7 @@
 #include <string>
 #include <vector>
 #include <deque>
-// #include <SFML/Graphics.hpp>
-// #include "C:\\Users\\g0ldc\\OneDrive\\Dokumente\\Libraries\\SFML-3.0.0\\include\\SFML\\Graphics.hpp"
+#include <SFML/Graphics.hpp>
 
 std::vector<std::pair<int, int>> get_important_indices(std::vector<std::string> map, int line_length) {
     std::vector<std::pair<int, int>> indices;
@@ -136,7 +135,7 @@ bool is_map_valid(std::vector<std::string> map) {
 }
 
 int main() {
-    std::string file_directory = ".\\maps\\map1.txt";
+    std::string file_directory = "C:/Users/g0ldc/OneDrive/Dokumente/Projects/CPP/game/maps/map1.txt";
 
     std::ifstream file(file_directory);
     std::string my_text;
@@ -160,11 +159,9 @@ int main() {
 
     std::cout << "VALID!!1!1";
 
-    /*
-
-    sf::RenderWindow window(sf::VideoMode({1000, 1000}), "SFML");
+    sf::RenderWindow window(sf::VideoMode({200, 200}), "SFML");
     sf::CircleShape shape(100.0);
-    shape.setFillColor(sf::Color::Blue);
+    shape.setFillColor(sf::Color::Red);
 
     while (window.isOpen())
     {
@@ -178,8 +175,6 @@ int main() {
         window.draw(shape);
         window.display();
     }
-
-    */
 
     return 0;
 }
