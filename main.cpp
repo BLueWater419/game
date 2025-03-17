@@ -141,8 +141,14 @@ int main() {
     std::string my_text;
     std::vector<std::string> map;
 
+    int width = 0;
+    int height = 0;
+
     while (std::getline(file, my_text)) {
         map.push_back(my_text);
+        
+        width = my_text.length();
+        height += 1;
 
         std::cout << my_text << "\n";
     }
@@ -158,21 +164,54 @@ int main() {
     }
 
     std::cout << "VALID!!1!1";
+    
+    double window_size_x = 400;
+    double window_size_y = 400;
 
-    sf::RenderWindow window(sf::VideoMode({200, 200}), "SFML");
-    sf::CircleShape shape(100.0);
-    shape.setFillColor(sf::Color::Red);
+    sf::RenderWindow window(sf::VideoMode({window_size_x, window_size_y}, 32), "SFML");
+    window.setFramerateLimit(60);
 
-    while (window.isOpen())
-    {
-        while (const std::optional event = window.pollEvent())
-        {
+    double square_size = std::min(window_size_x / width, window_size_y / height);
+
+    double offset_x = (window_size_x - (width * square_size)) / 2.0;
+    double offset_y = (window_size_y - (height * square_size)) / 2.0;
+
+    std::vector<sf::RectangleShape> rectangles;
+
+    for (int row = 0; row < height; ++row) {
+        for (int col = 0; col < width; ++col) {
+            sf::RectangleShape shape(sf::Vector2f(square_size, square_size));
+            
+            shape.setPosition(sf::Vector2f(col * square_size + offset_x, row * square_size + offset_y));
+
+            if (map[row][col] == '1') {
+                shape.setFillColor(sf::Color::Black); // Wall
+            } else if (map[row][col] == '0') {
+                shape.setFillColor(sf::Color::White); // Empty
+            } else if (map[row][col] == 'P') {
+                shape.setFillColor(sf::Color::Green); // Player start
+            } else if (map[row][col] == 'E') {
+                shape.setFillColor(sf::Color::Red); // Exit
+            } else if (map[row][col] == 'C') {
+                shape.setFillColor(sf::Color::Yellow); // Collectible
+            }
+
+            rectangles.push_back(shape);
+        }
+    }
+
+    while (window.isOpen()) {
+        while (const std::optional event = window.pollEvent()) {
             if (event->is<sf::Event::Closed>())
                 window.close();
         }
 
         window.clear();
-        window.draw(shape);
+
+        for (const auto& rect : rectangles) {
+            window.draw(rect);
+        }
+
         window.display();
     }
 
