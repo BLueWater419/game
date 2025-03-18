@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 #include <deque>
+#include <set>
 #include <SFML/Graphics.hpp>
 
 std::vector<std::pair<int, int>> get_important_indices(std::vector<std::string> map, int line_length) {
@@ -73,26 +74,30 @@ std::pair<int, int> is_map_right_shape(std::vector<std::string> map) {
     return std::make_pair(h, w);
 }
 
-bool recurse(std::vector<std::string> map, std::pair<int, int> current, std::pair<int, int> target, std::vector<std::pair<int, int>> visited, std::pair<int, int> hw_pair) {
+bool recurse(const std::vector<std::string>& map, std::pair<int, int> current, std::pair<int, int> target, std::set<std::pair<int, int>>& visited, std::pair<int, int> hw_pair) {
     std::vector<std::pair<int, int>> directions = {
-        std::make_pair(0, 1), std::make_pair(1, 0),
-        std::make_pair(0, -1), std::make_pair(-1, 0)
+        {0, 1}, {1, 0}, {0, -1}, {-1, 0}
     };
 
-    if (current == target) return true;
+    if (current == target) {
+        return true;
+    }
 
-    visited.push_back(current);
+    visited.insert(current);
 
-    for (std::pair<int, int> dir : directions) {
-        int next_x = (current.second + dir.second) % hw_pair.second;
-        int next_y = (current.first + dir.first) % hw_pair.first;
-        std::pair<int, int> next_pos = {next_y, next_x};
+    for (const auto& dir : directions) {
+        int next_x = current.second + dir.second;
+        int next_y = current.first + dir.first;
 
-        if (is_pair_in_vector(next_pos, visited) || (map[next_y][next_x] == '1')) {
+        if (next_x < 0 || next_x >= hw_pair.second || next_y < 0 || next_y >= hw_pair.first) {
             continue;
         }
 
-        if (recurse(map, next_pos, target, visited, hw_pair)) {
+        if (map[next_y][next_x] == '1' || visited.count({next_y, next_x}) > 0) {
+            continue;
+        }
+
+        if (recurse(map, {next_y, next_x}, target, visited, hw_pair)) {
             return true;
         }
     }
@@ -100,16 +105,20 @@ bool recurse(std::vector<std::string> map, std::pair<int, int> current, std::pai
     return false;
 }
 
-bool map_has_correct_paths(std::vector<std::string> map, std::pair<int, int> hw_pair) {
+bool map_has_correct_paths(const std::vector<std::string>& map, std::pair<int, int> hw_pair) {
+    std::cout << "Getting indices.\n";
     std::vector<std::pair<int, int>> important_indices = get_important_indices(map, hw_pair.second);
+    std::cout << "Getting starting position.\n";
     std::pair<int, int> starting_pos = get_starting_position(map, hw_pair.second);
 
     for (std::pair<int, int> target : important_indices) {
-        std::vector<std::pair<int, int>> visited;
+        std::set<std::pair<int, int>> visited;
+
+        std::cout << "Checking path to target: " << target.first << ", " << target.second << "\n";
 
         if (!recurse(map, starting_pos, target, visited, hw_pair)) {
             return false;
-        }   
+        }
     }
 
     return true;
@@ -160,10 +169,10 @@ int main() {
     file.close();
     if (!is_valid) {
         std::cout << "WRONG!11!1";
-        return -1;
+        // return -1;
+    } else {
+        std::cout << "VALID!!1!1";
     }
-
-    std::cout << "VALID!!1!1";
     
     double window_size_x = 400;
     double window_size_y = 400;
