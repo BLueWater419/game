@@ -174,10 +174,16 @@ int main() {
         std::cout << "VALID!!1!1";
     }
     
-    double window_size_x = 400;
-    double window_size_y = 400;
+    double window_size_x = 1920;
+    double window_size_y = 1080;
 
-    sf::RenderWindow window(sf::VideoMode({window_size_x, window_size_y}, 32), "SFML");
+    sf::Texture wall_texture(".\\textures\\wall.png");
+    sf::Texture free_space_texture(".\\textures\\free_space.png");
+    sf::Texture player_texture(".\\textures\\player.png");
+    sf::Texture exit_texture(".\\textures\\exit.png");
+    sf::Texture collectible_texture(".\\textures\\collectible.png");
+
+    sf::RenderWindow window(sf::VideoMode({window_size_x, window_size_y}), "SFML");
     window.setFramerateLimit(60);
 
     double square_size = std::min(window_size_x / width, window_size_y / height);
@@ -185,27 +191,29 @@ int main() {
     double offset_x = (window_size_x - (width * square_size)) / 2.0;
     double offset_y = (window_size_y - (height * square_size)) / 2.0;
 
-    std::vector<sf::RectangleShape> rectangles;
+    std::vector<sf::Sprite> sprites;
 
     for (int row = 0; row < height; ++row) {
         for (int col = 0; col < width; ++col) {
-            sf::RectangleShape shape(sf::Vector2f(square_size, square_size));
+            sf::Sprite sprite(free_space_texture);
             
-            shape.setPosition(sf::Vector2f(col * square_size + offset_x, row * square_size + offset_y));
 
             if (map[row][col] == '1') {
-                shape.setFillColor(sf::Color::Black); // Wall
+                sprite.setTexture(wall_texture);
             } else if (map[row][col] == '0') {
-                shape.setFillColor(sf::Color::White); // Empty
+                sprite.setTexture(free_space_texture);
             } else if (map[row][col] == 'P') {
-                shape.setFillColor(sf::Color::Green); // Player start
+                sprite.setTexture(player_texture);
             } else if (map[row][col] == 'E') {
-                shape.setFillColor(sf::Color::Red); // Exit
+                sprite.setTexture(exit_texture);
             } else if (map[row][col] == 'C') {
-                shape.setFillColor(sf::Color::Yellow); // Collectible
+                sprite.setTexture(collectible_texture);
             }
 
-            rectangles.push_back(shape);
+            sprite.setScale(sf::Vector2f(square_size, square_size));
+            sprite.setPosition(sf::Vector2f(col * square_size, row * square_size));
+
+            sprites.push_back(sprite);
         }
     }
 
@@ -213,12 +221,14 @@ int main() {
         while (const std::optional event = window.pollEvent()) {
             if (event->is<sf::Event::Closed>())
                 window.close();
+
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Escape)) window.close();
         }
 
         window.clear();
 
-        for (const auto& rect : rectangles) {
-            window.draw(rect);
+        for (sf::Sprite sprite : sprites) {
+            window.draw(sprite);
         }
 
         window.display();
