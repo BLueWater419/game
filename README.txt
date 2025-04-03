@@ -1,0 +1,1 @@
+Go to build and run "game.exe"
