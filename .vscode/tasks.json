@@ -7,9 +7,16 @@
             "args": [
                 "-fdiagnostics-color=always",
                 "-g",
-                "${file}",
+                "${workspaceFolder}/code/*.cpp",
                 "-o",
-                "${fileDirname}\\${fileBasenameNoExtension}.exe"
+                "main.exe",
+                "-I",
+                ".\\libraries\\SFML-3.0.0\\include .\\code\\include\\render.hpp .\\code\\include\\parse.hpp",
+                "-L",
+                ".\\libraries\\SFML-3.0.0\\lib",
+                "-lsfml-graphics",
+                "-lsfml-window",
+                "-lsfml-system"
             ],
             "options": {
                 "cwd": "C:\\msys64\\ucrt64\\bin"
@@ -29,13 +36,19 @@
             "type": "shell",
             "command": "g++",
             "args": [
-                "C:\\Users\\g0ldc\\OneDrive\\Dokumente\\Projects\\CPP\\game\\main.cpp",
+                "${workspaceFolder}\\code\\main.cpp",
+                "${workspaceFolder}\\code\\render.cpp",
+                "${workspaceFolder}\\code\\parse.cpp",
+                "${workspaceFolder}\\include\\parse.hpp",
+                "${workspaceFolder}\\include\\render.hpp",
                 "-o",
                 "main.exe",
                 "-I",
-                "C:\\Users\\g0ldc\\OneDrive\\Dokumente\\Libraries\\SFML-3.0.0\\include",
+                "${workspaceFolder}\\libraries\\SFML-3.0.0\\include",
+                "${workspaceFolder}\\include\\render.hpp",
+                "${workspaceFolder}\\include\\parse.hpp",
                 "-L",
-                "C:\\Users\\g0ldc\\OneDrive\\Dokumente\\Libraries\\SFML-3.0.0\\lib",
+                "${workspaceFolder}\\libraries\\SFML-3.0.0\\lib",
                 "-lsfml-graphics",
                 "-lsfml-window",
                 "-lsfml-system"
